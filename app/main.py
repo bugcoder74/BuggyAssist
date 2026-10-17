@@ -1,15 +1,22 @@
 from fastapi import FastAPI
+from contextlib import asynccontextmanager
+
+from app.db.session import create_db_and_tables
+from app.api.routes import health, subjects, students
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    create_db_and_tables()
+    yield
 
 app = FastAPI(
     title="EasyAttend API",
     description="Local-first attendance companion",
-    version="0.1.0"
+    version="0.2.0",
+    lifespan=lifespan
 )
 
-@app.get("/health")
-def check_health():
-    return {"status": "healthy", "app": "EasyAttend", "version": "0.1.0"}
-
-@app.get("/")
-def greet():
-    return {"message" : "Welcome to the BuggyAssist"}
+# Routers ko plug-in ki tarah add karna
+app.include_router(health.router)
+app.include_router(subjects.router, prefix="/subjects", tags=["Subjects"])
+app.include_router(students.router, prefix="/students", tags=["Students"])

@@ -1,14 +1,9 @@
 from sqlmodel import SQLModel, Field
 from typing import Optional
-import datetime
+from datetime import timezone, datetime
 
 # The common blueprint
 class StudentBase(SQLModel):
-
-    username : str = Field(
-        index = True,
-        unique = True
-    )
 
     name : Optional[str] = Field(
         default = None
@@ -46,8 +41,16 @@ class Student(StudentBase, table = True):
 
     
 
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
+
+    updated_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        sa_column_kwargs={
+            "onupdate": lambda: datetime.now(timezone.utc)
+        }
+    )
 
 
 

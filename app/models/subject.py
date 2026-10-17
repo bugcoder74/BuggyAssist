@@ -15,3 +15,12 @@ class Subject(SQLModel, table=True):
     code : str = Field(
         default = ""
     )
+
+    total_classes : int = Field(
+        default = 0
+    )
+
+    attended_classes : int = Field(
+        default = 0
+    )
+    
